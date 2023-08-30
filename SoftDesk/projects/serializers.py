@@ -19,6 +19,9 @@ class IssueSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
     issues = IssueSerializer(many=True, read_only=True)
     created_time = serializers.DateTimeField(read_only=True)
+    author = serializers.ReadOnlyField(source='author.id')  # Mark author as read-only
+    contributors = serializers.PrimaryKeyRelatedField(many=True, read_only=True)  # Mark contributors as read-only
+
 
     class Meta:
         model = Project
