@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import Project, Issue, Comment
-
 class CommentSerializer(serializers.ModelSerializer):
     created_time = serializers.DateTimeField(read_only=True)
     
@@ -19,8 +18,8 @@ class IssueSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
     issues = IssueSerializer(many=True, read_only=True)
     created_time = serializers.DateTimeField(read_only=True)
-    author = serializers.ReadOnlyField(source='author.id')  # Mark author as read-only
-    contributors = serializers.PrimaryKeyRelatedField(many=True, read_only=True)  # Mark contributors as read-only
+    author = serializers.ReadOnlyField(source='author.username')
+    contributors = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
 
     class Meta:
