@@ -10,7 +10,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        author = self.request.user
+        contributors = [author]
+        contributors_data = self.request.data.get('contributors', [])  # Get the contributors from the request data
+        contributors.extend(contributors_data)  # Extend the list with contributors from the request
+        serializer.save(author=author, contributors=contributors)
 
 
 class IssueViewSet(viewsets.ModelViewSet):

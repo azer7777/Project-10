@@ -2,15 +2,8 @@ from django.db import models
 from accounts.models import CustomUser
 import uuid
 
-class CommonInfo(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    created_time = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
-    class Meta:
-        abstract = True
-
-class Project(CommonInfo):
+class Project(models.Model):
     TYPE_CHOICES = [
         ('back-end', 'Back-End'),
         ('front-end', 'Front-End'),
@@ -22,6 +15,7 @@ class Project(CommonInfo):
     description = models.TextField()
     type = models.CharField(max_length=20, choices=TYPE_CHOICES)
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='authored_projects')
+    created_time = models.DateTimeField(auto_now_add=True)
 
     contributors = models.ManyToManyField(CustomUser, related_name='contributed_projects')
 
@@ -29,7 +23,7 @@ class Project(CommonInfo):
         return self.name
 
 
-class Issue(CommonInfo):
+class Issue(models.Model):
     PRIORITY_CHOICES = [
         ('LOW', 'Low'),
         ('MEDIUM', 'Medium'),
@@ -55,12 +49,13 @@ class Issue(CommonInfo):
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='TO_DO')
     assignee = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='assigned_issues')
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='issues')
+    created_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
 
 
-class Comment(CommonInfo):
+class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     description = models.TextField()
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='comments')

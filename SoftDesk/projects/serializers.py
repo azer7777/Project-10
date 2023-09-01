@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Project, Issue, Comment
+from accounts.models import CustomUser
 class CommentSerializer(serializers.ModelSerializer):
     created_time = serializers.DateTimeField(read_only=True)
     
@@ -19,7 +20,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     issues = IssueSerializer(many=True, read_only=True)
     created_time = serializers.DateTimeField(read_only=True)
     author = serializers.ReadOnlyField(source='author.username')
-    contributors = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    contributors = serializers.PrimaryKeyRelatedField(many=True, queryset=CustomUser.objects.all())
 
 
     class Meta:
