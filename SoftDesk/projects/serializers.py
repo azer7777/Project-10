@@ -12,6 +12,8 @@ class IssueSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     created_time = serializers.DateTimeField(read_only=True)
     author = serializers.ReadOnlyField(source='author.username')
+    contributors = serializers.PrimaryKeyRelatedField(many=True, queryset=CustomUser.objects.all(), required=False)
+    assignee = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), required=False)
     
     class Meta:
         model = Issue
@@ -19,6 +21,7 @@ class IssueSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     issues = IssueSerializer(many=True, read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)
     created_time = serializers.DateTimeField(read_only=True)
     author = serializers.ReadOnlyField(source='author.username')
     contributors = serializers.PrimaryKeyRelatedField(many=True, queryset=CustomUser.objects.all())
