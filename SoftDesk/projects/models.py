@@ -41,13 +41,13 @@ class Issue(models.Model):
         ('IN_PROGRESS', 'In Progress'),
         ('FINISHED', 'Finished'),
     ]
-
+    
     name = models.CharField(max_length=100)
     description = models.TextField()
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES)
     tag = models.CharField(max_length=10, choices=TAG_CHOICES)
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='TO_DO')
-    assignee = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='assigned_issues')
+    assignee = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='assigned_issues', blank=True, null=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='issues')
     created_time = models.DateTimeField(auto_now_add=True)
 
