@@ -50,7 +50,7 @@ python manage.py runserver
 ````
 7. Access the application in your browser at http://localhost:8000.
 
-##Usage
+## Usage
 
 Register and log in to your account.
 Create a project and become its author.
@@ -60,5 +60,5 @@ Assign issues to contributors.
 Add comments to issues.
 Manage your projects and issues effectively!
 
-##API Endpoints
+## API Endpoints
 SoftDesk provides a RESTful API for managing projects, issues, and comments. You can explore the API endpoints by visiting http://localhost:8000/api/ after running the development server.
