@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from .models import Project, Issue, Comment
 from .serializers import ProjectSerializer, IssueSerializer, CommentSerializer
-from .permissions import IsAuthorOrReadOnly, IsContributor
+from .permissions import IsAuthorOrReadOnly, IsContributor, CanAccessProjectResources
 
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
@@ -18,14 +18,15 @@ class ProjectViewSet(viewsets.ModelViewSet):
         author = self.request.user
         contributors = [author]
         contributors_data = self.request.data.get('contributors', [])  # Get the contributors from the request data
-        contributors.extend(contributors_data)  # Extend the list with contributors from the request
+        contributors.extend(contributors_data)
+        # Extend the list with contributors from the request
         serializer.save(author=author, contributors=contributors)
 
 
 
 class IssueViewSet(viewsets.ModelViewSet):
     serializer_class = IssueSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, CanAccessProjectResources, IsAuthorOrReadOnly]
 
     def get_queryset(self):
         # Filter issues based on the project
@@ -36,14 +37,24 @@ class IssueViewSet(viewsets.ModelViewSet):
         # Ensure the project is set based on the URL
         project_id = self.kwargs['project_pk']
         project = Project.objects.get(pk=project_id)
-        serializer.save(project=project)
+        author = self.request.user
+        serializer.save(project=project, author=author)
+
+    def get_project_from_request(self, request):
+        project_id = self.kwargs.get('project_pk')
+        if project_id is not None:
+            try:
+                return Project.objects.get(pk=project_id)
+            except Project.DoesNotExist:
+                return None
+        return None
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, CanAccessProjectResources, IsAuthorOrReadOnly]
 
     def get_queryset(self):
-        # Filter comments based on the issue
+        # Filter comments based on the project and issue
         project_id = self.kwargs['project_pk']
         issue_id = self.kwargs['issue_pk']
         return Comment.objects.filter(issue__project_id=project_id, issue_id=issue_id)
@@ -53,7 +64,17 @@ class CommentViewSet(viewsets.ModelViewSet):
         project_id = self.kwargs['project_pk']
         issue_id = self.kwargs['issue_pk']
         issue = Issue.objects.get(project_id=project_id, pk=issue_id)
-        serializer.save(issue=issue)
+        author = self.request.user
+        serializer.save(issue=issue, author=author)
+
+    def get_project_from_request(self, request):
+        project_id = self.kwargs.get('project_pk')
+        if project_id is not None:
+            try:
+                return Project.objects.get(pk=project_id)
+            except Project.DoesNotExist:
+                return None
+        return None
 
    
 

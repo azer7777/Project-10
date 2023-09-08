@@ -17,7 +17,7 @@ class Project(models.Model):
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='authored_projects')
     created_time = models.DateTimeField(auto_now_add=True)
 
-    contributors = models.ManyToManyField(CustomUser, related_name='contributed_projects')
+    contributors = models.ManyToManyField(CustomUser, related_name='contributed_projects', blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -50,6 +50,7 @@ class Issue(models.Model):
     assignee = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='assigned_issues', blank=True, null=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='issues')
     created_time = models.DateTimeField(auto_now_add=True)
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='authored_issues', default=1)
 
     def __str__(self):
         return self.name
@@ -58,8 +59,8 @@ class Issue(models.Model):
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     description = models.TextField()
-    issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='comments')
-    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='comments', blank=True, null=True)
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='authored_comments', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
