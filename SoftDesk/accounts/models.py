@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
+
 class CustomUser(AbstractUser):
     can_be_contacted = models.BooleanField(default=False)
     can_data_be_shared = models.BooleanField(default=False)
@@ -20,4 +21,3 @@ class CustomUser(AbstractUser):
         age = timezone.now().year - self.date_of_birth.year
         if age < 15:
             raise ValidationError("You must be at least 15 years old to register.")
-

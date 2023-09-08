@@ -5,30 +5,39 @@ from accounts.models import CustomUser
 
 class BaseResourceSerializer(serializers.ModelSerializer):
     created_time = serializers.DateTimeField(read_only=True)
-    author = serializers.ReadOnlyField(source='author.username')
+    author = serializers.ReadOnlyField(source="author.username")
 
 
 class CommentSerializer(BaseResourceSerializer):
     issues = serializers.PrimaryKeyRelatedField(queryset=Issue.objects.all(), required=False)
+
     class Meta:
         model = Comment
-        fields = '__all__'
+        fields = "__all__"
+
 
 class IssueSerializer(BaseResourceSerializer):
     project = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all(), required=False)
     comments = CommentSerializer(many=True, read_only=True)
     contributors = serializers.PrimaryKeyRelatedField(many=True, queryset=CustomUser.objects.all(), required=False)
     assignee = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), required=False)
-    
+
+    def validate_assignee(self, assignee):
+        project = self.instance.project if self.instance else self.initial_data.get("project")
+        if project and assignee not in project.contributors.all():
+            raise serializers.ValidationError("Assignee must be a contributor to the project.")
+
+        return assignee
+
     class Meta:
         model = Issue
-        fields = '__all__'
+        fields = "__all__"
+
 
 class ProjectSerializer(BaseResourceSerializer):
-    issue_ids = serializers.PrimaryKeyRelatedField(many=True, read_only=True, source='issues')
+    issue_ids = serializers.PrimaryKeyRelatedField(many=True, read_only=True, source="issues")
     contributors = serializers.PrimaryKeyRelatedField(many=True, queryset=CustomUser.objects.all(), required=False)
-
 
     class Meta:
         model = Project
-        fields = '__all__'
+        fields = "__all__"

@@ -5,19 +5,38 @@ from datetime import date
 
 User = get_user_model()
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'can_be_contacted', 'can_data_be_shared', 'date_of_birth')
-        extra_kwargs = {'password': {'write_only': True}}  # Hide password in responses
+        fields = (
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "can_be_contacted",
+            "can_data_be_shared",
+            "date_of_birth",
+        )
+        extra_kwargs = {"password": {"write_only": True}}
+
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'confirm_password', 'can_be_contacted', 'can_data_be_shared', 'date_of_birth')
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = (
+            "username",
+            "email",
+            "password",
+            "confirm_password",
+            "can_be_contacted",
+            "can_data_be_shared",
+            "date_of_birth",
+        )
+        extra_kwargs = {"password": {"write_only": True}}
 
     def validate_date_of_birth(self, value):
         age = (date.today() - value).days // 365
@@ -26,10 +45,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
-        if data['password'] != data.pop('confirm_password'):
+        if data["password"] != data.pop("confirm_password"):
             raise serializers.ValidationError("Passwords do not match.")
         return data
 
     def create(self, validated_data):
-        validated_data.pop('confirm_password', None)
+        validated_data.pop("confirm_password", None)
         return User.objects.create_user(**validated_data)
