@@ -16,6 +16,7 @@ SoftDesk is a web application that helps teams manage projects, issues, and coll
 ## Requirements
 
 - Python 3.x
+- Pipenv
 - Django
 - Django REST framework
 - djangorestframework-simplejwt (for JWT authentication)
@@ -26,14 +27,14 @@ SoftDesk is a web application that helps teams manage projects, issues, and coll
 ````
 git clone https://github.com/azer7777/Project-10.git
 ````
-2. Create a virtual environment and activate it:
+2. Create a Pipenv environment and activate it:
 ````
-python3 -m venv venv 
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+pipenv install --python 3.x 
+pipenv shell
 ````
 3. Install dependencies:
 ````
-pip install -r requirements.txt
+pipenv install
 ````
 4. Run migrations:
 ````
